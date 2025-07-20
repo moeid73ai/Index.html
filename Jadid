@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>نمایش آواتار + پیام</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #f4f4f4; }
+    #container { width: 100vw; height: 70vh; }
+    #chat { padding: 20px; text-align: center; }
+    input, button { padding: 10px; font-size: 16px; }
+    #response { margin-top: 20px; font-size: 18px; color: #333; }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <div id="chat">
+    <input type="text" id="userInput" placeholder="پیامت را بنویس..." />
+    <button onclick="showMessage()">ارسال</button>
+    <div id="response"></div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.154/build/three.module.js';
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.154/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.154/examples/jsm/loaders/GLTFLoader.js';
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 1.5, 3);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight * 0.7);
+    document.getElementById('container').appendChild(renderer.domElement);
+
+    const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+    scene.add(light);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1.4, 0);
+    controls.update();
+
+    const loader = new GLTFLoader();
+    const avatarUrl = "https://models.readyplayer.me/687d253d50cf0bbaeeedbb94.glb";
+
+    loader.load(avatarUrl, gltf => {
+      gltf.scene.scale.set(1.4, 1.4, 1.4);
+      scene.add(gltf.scene);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // نمایش پیام
+    window.showMessage = function () {
+      const msg = document.getElementById("userInput").value;
+      document.getElementById("response").innerText = "🗣 " + msg;
+    };
+  </script>
+</body>
+</html>
